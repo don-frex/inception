@@ -1,0 +1,46 @@
+
+services:
+  db:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - wordpress_network
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: myuser
+      WORDPRESS_DB_PASSWORD: mypassword
+    volumes:
+      - wordpress_data:/var/www/html/wordpress
+    networks:
+      - wordpress_network
+
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./requirements/nginx/conf.d/default.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - wordpress
+    networks:
+      - wordpress_network
+
+volumes:
+  db_data:
+  wordpress_data:
+
+networks:
+  wordpress_network:
