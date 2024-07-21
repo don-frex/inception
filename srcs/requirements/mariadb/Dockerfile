@@ -1,21 +1,12 @@
 # mariadb/Dockerfile
-FROM debian:buster
+FROM debian:12
 
-# Install MariaDB
-RUN apt-get update && apt-get install -y mariadb-server && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install mariadb-server -y
 
-# Set environment variables
-ENV MYSQL_ROOT_PASSWORD=my-secret-pw
-ENV MYSQL_DATABASE=wordpress
-ENV MYSQL_USER=myuser
-ENV MYSQL_PASSWORD=mypassword
+RUN sed -i "s/127.0.0.1/0.0.0.0/g" /etc/mysql/mariadb.conf.d/50-server.cnf
 
-# Copy custom MariaDB configuration if needed
-#COPY my.cnf /etc/mysql/my.cnf
+RUN mkdir -p /run/mysql /var/lib/mysql /var/run/mysqld
 
-# Expose the port MariaDB runs on
-EXPOSE 3306
+COPY ./tools/script.sh /
 
-# Start MariaDB
-CMD ["mysqld"]
+CMD ["bash", "/script.sh"]

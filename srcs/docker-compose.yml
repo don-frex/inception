@@ -4,43 +4,54 @@ services:
     build: ./requirements/mariadb
     container_name: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: my-secret-pw
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypassword
+      db1_name: ${db1_name}
+      db1_user: ${db1_user}
+      db1_pwd: ${db1_pwd}
+      db1_root_pwd: ${db1_root_pwd}
     volumes:
       - db_data:/var/lib/mysql
     networks:
-      - wordpress_network
+      - inception
 
   wordpress:
     build: ./requirements/wordpress
     container_name: wordpress
-    environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_NAME: wordpress
-      WORDPRESS_DB_USER: myuser
-      WORDPRESS_DB_PASSWORD: mypassword
+    depends_on:
+      - db
     volumes:
-      - wordpress_data:/var/www/html/wordpress
+      - wordpress_data:/var/www/html
+    env_file:
+      - .env
     networks:
-      - wordpress_network
-
+      - inception
+    restart: always
   nginx:
     build: ./requirements/nginx
     container_name: nginx
     ports:
-      - "8080:80"
+      - "443:443"
     volumes:
-      - ./requirements/nginx/conf.d/default.conf:/etc/nginx/nginx.conf
+      - wordpress_data:/var/www/html
     depends_on:
       - wordpress
     networks:
-      - wordpress_network
+      - inception
 
 volumes:
-  db_data:
   wordpress_data:
+      driver: local
+      driver_opts:
+          type: 'none' 
+          device: '/home/asaber/data/wordpress' 
+          o: 'bind'
+  db_data:
+      driver: local
+      driver_opts:
+          type: 'none'
+          o: 'bind'
+          device: '/home/asaber/data/mariadb'
+
 
 networks:
-  wordpress_network:
+  inception:
+    name: inception

@@ -1,31 +1,11 @@
-# Use the official Debian Buster image as a base
-FROM debian:buster
+FROM debian:12
 
-# Install Nginx
-RUN apt-get update && \
-    apt-get install -y nginx openssl && \
-	apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt update -y && \
+	apt upgrade -y && \
+    apt install -y nginx openssl curl
 
-# Update package lists and install curl
-RUN apt-get update && apt-get install -y curl
+COPY ./conf/default /etc/nginx/sites-available/
 
-#remove default config
-RUN	rm -f /etc/nginx/nginx.conf
+COPY ./tools/nginx_configuration.sh /
 
-# Copy custom configuration file
-COPY conf.d/default.conf /etc/nginx/nginx.conf
-
-# Copy static website files (if any)
-# COPY Applight/* /usr/share/nginx/html
-
-# Copy and execute custom nginx configuration script
-COPY ./tools/nginx_configuration.sh /tmp/
-RUN chmod +x /tmp/nginx_configuration.sh
-# Expose port 443
-EXPOSE 80
-
-# Start Nginx
-ENTRYPOINT	["sh", "/tmp/nginx_configuration.sh"]
-
-
+ENTRYPOINT	["bash", "/nginx_configuration.sh"]

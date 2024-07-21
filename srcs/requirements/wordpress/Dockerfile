@@ -1,60 +1,36 @@
 # # wordpress/Dockerfile
-# FROM debian:buster
+FROM debian:12
 
-# # Install dependencies
-# RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-#     php-fpm \
-# 	php-mysql \
-#     curl \
-#     wget \
-#     unzip \
-#     && rm -rf /var/lib/apt/lists/*
+#insall dependancies
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    php-fpm \
+	php-mysql \
+    curl \
+    wget \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
 
 # # Set working directory
-# WORKDIR /var/www/html
+WORKDIR /var/www/html
 
-# # Download and extract WordPress
-# RUN wget https://wordpress.org/latest.tar.gz && \
-#     tar -xvzf latest.tar.gz && \
-#     rm latest.tar.gz && \
-#     mv wordpress/* . && \
-#     rm -rf wordpress
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar 
 
+RUN chmod +x wp-cli.phar
+
+RUN mv wp-cli.phar /usr/local/bin/wp
+
+# RUN wp core download --allow-root
+
+# RUN mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+
+# Copy custom WordPress configuration if needed
+# COPY ./conf/wp-config.php /
+
+# RUN mv /wp-config.php /var/www/html/wp-config.php
 # # Set permissions
-# RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/html
 
-# # Copy custom WordPress configuration if needed
-# COPY ./config/wp-config.php /var/www/html/wp-config.php
+COPY 	./conf/script.sh /
+RUN 	chmod +x /script.sh
 
-# # Expose the port PHP-FPM runs on
-# EXPOSE 9000
-
-# # Start PHP-FPM
-# CMD ["php-fpm7.3", "--nodaemonize"]
-
-FROM alpine:3.20.1
-
-RUN apk update && apk upgrade
-
-RUN apk add --no-cache \
-	php \
-	php-fpm \
-	php-phar
-
-WORKDIR /var/www
-
-RUN wget https://wordpress.org/latest.zip && \
-	unzip latest.zip && \
-	cp -rf wordpress/* . && \
-	rm -rf wordpress latest.zip
-
-RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-	chmod +x wp-cli.phar && \
-	mv wp-cli.phar /usr/local/bin/wp
-
-COPY ./conf/script.sh .
-RUN chmod +x script.sh
-
-ENTRYPOINT [ "sh", "./script.sh" ]
-
-CMD [ "php-fpm83", "-F" ]
+CMD [ "/script.sh" ]
