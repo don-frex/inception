@@ -1,6 +1,6 @@
-all : begin
+all : up
 
-begin :
+up :
 	mkdir -p /home/asaber/data/mariadb
 	mkdir -p /home/asaber/data/wordpress
 	docker-compose -f ./srcs/docker-compose.yml up --build
@@ -15,4 +15,4 @@ start :
 	@docker-compose -f ./srcs/docker-compose.yml start  || true
 
 status :
-	@docker ps -a | grep "mariadb\|wordpress\|nginx\|adminer\|cadvisor\|anon\|redis\|ftp-server"	|| true
+	@docker ps -a | grep "mariadb\|wordpress\|nginx"	|| true
