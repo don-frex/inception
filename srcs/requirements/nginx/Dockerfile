@@ -1,10 +1,10 @@
 FROM debian:12
 
-RUN apt update -y && \
+RUN apt update && \
 	apt upgrade -y && \
     apt install -y nginx openssl curl
 
-COPY ./conf/default /etc/nginx/sites-available/
+COPY ./conf/default /etc/nginx/conf.d/default.conf
 
 COPY ./tools/nginx_configuration.sh /
 
