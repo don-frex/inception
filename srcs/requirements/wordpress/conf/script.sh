@@ -10,4 +10,5 @@ then
 else
 	echo the config file is already in there !!
 fi
-/usr/sbin/php-fpm8.2 -F
+
+exec /usr/sbin/php-fpm8.2 -F

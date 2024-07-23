@@ -11,6 +11,7 @@ server {
 
 	location / {
 		try_files $uri $uri/ =404;  #change all the unknow errors to 404
+		
 	}
 
 	location ~ \.php$ {

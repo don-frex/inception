@@ -17,4 +17,4 @@ echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '${db1_root_pwd}';" >> /tmp/in
 
 mariadbd --bootstrap --user=root < /tmp/init.sql
 
-mariadbd --user=root
+exec mariadbd --user=root

@@ -1,8 +1,8 @@
-
 services:
-  db:
+  mariadb:
     build: ./requirements/mariadb
     container_name: mariadb
+    image: mariadb
     environment:
       db1_name: ${db1_name}
       db1_user: ${db1_user}
@@ -16,8 +16,9 @@ services:
   wordpress:
     build: ./requirements/wordpress
     container_name: wordpress
+    image: wordpress
     depends_on:
-      - db
+      - mariadb
     volumes:
       - wordpress_data:/var/www/html
     env_file:
@@ -28,6 +29,7 @@ services:
   nginx:
     build: ./requirements/nginx
     container_name: nginx
+    image: nginx
     ports:
       - "443:443"
     volumes:

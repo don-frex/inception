@@ -5,4 +5,6 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ngi
 
 cat -e /etc/ssl/certs/nginx-selfsigned.crt
 ls -l /etc/nginx/sites-enabled
-nginx -g "daemon off;"
+
+
+exec nginx -g "daemon off;"
